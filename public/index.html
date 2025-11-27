@@ -1,0 +1,206 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Portal Administrador - Municipalidad</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- HEADER -->
+      <header class="header">
+        <div class="header-left">
+          <h1>Portal Administrador - Municipalidad</h1>
+          <span id="lblUsuario" class="usuario-label"></span>
+        </div>
+        <button class="btn btn-danger" onclick="cerrarSesion()">Cerrar sesión</button>
+      </header>
+
+      <main class="main-layout">
+        <!-- BÚSQUEDA -->
+        <section class="card panel-busqueda">
+          <h2 class="section-title">Búsqueda de propiedad</h2>
+          <p class="hint">
+            Puede buscar una propiedad por su <strong>número de finca</strong> o por
+            <strong>identificación del propietario</strong>.
+          </p>
+
+          <div class="busqueda-grid">
+            <div class="busqueda-bloque search-option">
+              <h3>Por número de finca</h3>
+              <input type="text" id="inputFinca" placeholder="Ej: F-0001" />
+              <button id="btnBuscarFinca" class="btn btn-primary">
+                Buscar por finca
+              </button>
+            </div>
+
+            <div class="busqueda-bloque search-option">
+              <h3>Por identificación</h3>
+              <input
+                type="text"
+                id="inputIdentificacion"
+                placeholder="Cédula / identificación del propietario"
+              />
+              <button id="btnBuscarIdentificacion" class="btn btn-primary">
+                Buscar por identificación
+              </button>
+            </div>
+          </div>
+
+          <!-- Lista de propiedades por cédula -->
+          <div id="contenedorPropiedadesCedula" class="lista-propiedades-cedula"></div>
+
+          <!-- Mensaje de búsqueda -->
+          <p id="mensajeBusqueda" class="mensaje"></p>
+        </section>
+
+        <!-- DETALLE DE PROPIEDAD -->
+        <section class="card panel-detalle">
+          <h2 class="section-title">Detalle de la propiedad seleccionada</h2>
+          <div id="detallePropiedad" class="detalle-propiedad">
+            <p class="mensaje">No hay ninguna propiedad seleccionada.</p>
+          </div>
+        </section>
+
+        <!-- FACTURAS PENDIENTES -->
+        <section class="card panel-facturas">
+          <h2 class="section-title">Facturas pendientes</h2>
+          <p class="hint">
+            Facturas que requieren pago. Solo se puede pagar siempre la
+            <strong>factura más antigua pendiente</strong>.
+          </p>
+
+          <!-- Resumen tipo highlight -->
+          <div id="resumenPendientes"></div>
+
+          <table class="tabla" id="tablaFacturasPendientes">
+            <thead>
+              <tr>
+                <th>Fecha factura</th>
+                <th>Fecha vencimiento</th>
+                <th>Estado</th>
+                <th>Cuota agua</th>
+                <th>Total original</th>
+                <th>Total a pagar</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyFacturasPendientes">
+              <tr>
+                <td colspan="7" class="text-center">No hay facturas pendientes</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- FACTURAS PAGADAS -->
+        <section class="card panel-facturas">
+          <h2 class="section-title">Facturas pagadas</h2>
+          <p class="hint">
+            Historial de facturas ya pagadas de esta propiedad.
+          </p>
+
+          <table class="tabla" id="tablaFacturasPagadas">
+            <thead>
+              <tr>
+                <th>Fecha factura</th>
+                <th>Fecha vencimiento</th>
+                <th>Cuota agua</th>
+                <th>Total original</th>
+                <th>Total pagado</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyFacturasPagadas">
+              <tr>
+                <td colspan="6" class="text-center">No hay facturas pagadas</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <footer class="footer">
+          Municipalidad - Sistema de Gestión de Propiedades © 2025
+        </footer>
+      </main>
+    </div>
+
+    <!-- MODAL PAGO -->
+    <div id="modalPago" class="modal">
+      <div class="modal-contenido">
+        <h2>Confirmar pago de factura</h2>
+
+        <div id="infoPago" class="info-pago">
+          <div class="resumen-pago">
+            <h3>Resumen de Pago</h3>
+            <div class="resumen-grid">
+              <div class="resumen-item">
+                <strong>Número de finca:</strong>
+                <span id="resumenFinca">-</span>
+              </div>
+              <div class="resumen-item">
+                <strong>Fecha factura:</strong>
+                <span id="resumenFechaFactura">-</span>
+              </div>
+              <div class="resumen-item">
+                <strong>Fecha vencimiento:</strong>
+                <span id="resumenFechaVencimiento">-</span>
+              </div>
+              <div class="resumen-item">
+                <strong>Fecha de pago:</strong>
+                <span id="resumenFechaPago">-</span>
+              </div>
+            </div>
+
+            <div class="montos-pago">
+              <div class="monto-item">
+                <strong>Total original:</strong>
+                <span id="resumenTotalOriginal">₡0.00</span>
+              </div>
+              <div class="monto-item">
+                <strong>Días de mora:</strong>
+                <span id="resumenDiasMora">0 días</span>
+              </div>
+              <div class="monto-item">
+                <strong>Intereses moratorios:</strong>
+                <span id="resumenIntereses">₡0.00</span>
+              </div>
+              <div class="monto-total">
+                <strong>Total a pagar:</strong>
+                <span id="resumenTotalFinal">₡0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label for="selectMedioPago">Medio de pago</label>
+          <select id="selectMedioPago">
+            <option value="1">1 - Efectivo</option>
+            <option value="2">2 - Tarjeta bancaria</option>
+          </select>
+
+          <label for="inputReferencia">Número de referencia (opcional)</label>
+          <input
+            type="text"
+            id="inputReferencia"
+            placeholder="Código del banco o del sistema"
+          />
+        </div>
+
+        <div class="modal-acciones">
+          <button id="btnConfirmarPago" class="btn btn-primary">
+            Confirmar pago
+          </button>
+          <button id="btnCancelarPago" class="btn btn-secondary">Cancelar</button>
+        </div>
+
+        <p id="mensajePago" class="mensaje"></p>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
